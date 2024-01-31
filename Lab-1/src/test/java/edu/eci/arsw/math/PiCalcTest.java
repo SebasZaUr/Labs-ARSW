@@ -49,4 +49,12 @@ public class PiCalcTest {
         }
     }
 
+    @Test
+    public void shouldCalculatePiDigitsWithThreads() throws InterruptedException {
+        byte[] threatResult = {2,4,3,15,6,10,8,8,8,5,10,3};
+        assertArrayEquals(threatResult,PiDigits.getDigits(0,12,1));
+        assertArrayEquals(threatResult,PiDigits.getDigits(0,12,2));
+        assertArrayEquals(threatResult,PiDigits.getDigits(0,12,5));
+    }
+
 }

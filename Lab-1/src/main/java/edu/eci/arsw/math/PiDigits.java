@@ -2,6 +2,8 @@ package edu.eci.arsw.math;
 
 import edu.eci.arsw.threads.PiDigitThread;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,30 +117,38 @@ public class PiDigits {
         return result;
     }
 
-    public  byte[][] getDigits(int start, int count,int numThreads) throws InterruptedException {
+    public static byte[] getDigits(int start, int count, int numThreads) throws InterruptedException {
         if (start < 0 || count < 0 || numThreads < 0) {
             throw new RuntimeException("Invalid Interval");
         }
         List<PiDigitThread> threads = new ArrayList<>();
         byte[][] digits = new byte[numThreads][1];
         int aux = count / numThreads;
+        int fixNumber = aux;
+        if (count % numThreads != 0){
+            fixNumber +=  count % numThreads;
+        }
         for(int i=0; i<numThreads-1;i++){
-            PiDigitThread thread = new PiDigitThread(aux * i, aux* i+1);
+            PiDigitThread thread = new PiDigitThread(aux * i, aux);
             threads.add(thread);
             thread.start();
         }
-        PiDigitThread thread = new PiDigitThread(aux * numThreads, count);
+        PiDigitThread thread = new PiDigitThread(aux * (numThreads-1), fixNumber);
         threads.add(thread);
         thread.start();
 
         for (PiDigitThread hilo: threads) {
             hilo.join();
         }
-
-        for (int i = 0; i < numThreads; i++) {
-            digits[i] = threads.get(i).getDigits();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            for (PiDigitThread threatList: threads) {
+                outputStream.write(threatList.getDigits());
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
         }
-        return digits;
+        return outputStream.toByteArray();
     }
 
 }

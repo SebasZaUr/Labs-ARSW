@@ -5,19 +5,22 @@
  */
 package edu.eci.arsw.threads;
 
+import edu.eci.arsw.math.PiDigits;
+
 /**
  *
  * @author hcadavid
  */
 public class CountThreadsMain {
     
-    public static void main(String a[]){
+    public static void main(String a[]) throws InterruptedException {
         CountThread thread1 = new CountThread(0,99);
         CountThread thread2 = new CountThread(99,199);
         CountThread thread3 = new CountThread(200,299);
         thread1.run();
         thread2.run();
         thread3.run();
+        byte[] list = PiDigits.getDigits(0,12,5);
 
     }
     

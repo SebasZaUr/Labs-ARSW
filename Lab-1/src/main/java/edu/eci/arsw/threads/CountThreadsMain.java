@@ -20,7 +20,7 @@ public class CountThreadsMain {
         thread1.run();
         thread2.run();
         thread3.run();
-        byte[] list = PiDigits.getDigits(0,12,5);
+        byte[] list = PiDigits.getDigits(3,12,5);
 
     }
     

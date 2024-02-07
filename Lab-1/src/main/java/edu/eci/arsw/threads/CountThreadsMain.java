@@ -17,11 +17,14 @@ public class CountThreadsMain {
         CountThread thread1 = new CountThread(0,99);
         CountThread thread2 = new CountThread(99,199);
         CountThread thread3 = new CountThread(200,299);
-        thread1.run();
-        thread2.run();
-        thread3.run();
-        byte[] list = PiDigits.getDigits(3,12,5);
-
+        byte[] list = PiDigits.getDigits(0, 50000,200);
+        for (int i =1;i<=32;i++){
+            long startTime = System.currentTimeMillis();
+            list = PiDigits.getDigits(0, 5000,i);
+            long endTime = System.currentTimeMillis();
+            long executionTime = endTime - startTime;
+            System.out.println("Tiempo de ejecución del hilo " + i+ " : " + executionTime + " milisegundos" );
+        }
     }
     
 }

@@ -122,14 +122,14 @@ public class PiDigits {
             throw new RuntimeException("Invalid Interval");
         }
         List<PiDigitThread> threads = new ArrayList<>();
-        int aux = count / numThreads;
+        int aux = (count / numThreads);
         int fixNumber = aux + count % numThreads;
         for(int i=0; i<numThreads-1;i++){
-            PiDigitThread thread = new PiDigitThread((aux * i)+start, aux);
+            PiDigitThread thread = new PiDigitThread((aux * i)+ start, aux);
             threads.add(thread);
             thread.start();
         }
-        PiDigitThread thread = new PiDigitThread(aux * (numThreads-1)+start, fixNumber);
+        PiDigitThread thread = new PiDigitThread(aux * (numThreads-1) + start, fixNumber);
         threads.add(thread);
         thread.start();
 

@@ -5,7 +5,7 @@ import java.util.Observable;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
+import java.util.Objects;
 import enums.Direction;
 import enums.GridSize;
 
@@ -30,6 +30,7 @@ public class Snake extends Observable implements Runnable {
     public boolean goal = false;
 
     private final Lock lock = new ReentrantLock();
+    private boolean isPaused =false;
 
 
     public Snake(int idt, Cell head, int direction) {
@@ -53,27 +54,32 @@ public class Snake extends Observable implements Runnable {
     @Override
     public void run() {
         while (!snakeEnd) {
-            
+            synchronized (lock) {
+                if (isPaused) {
+                    try {
+                        lock.wait(); // Espera hasta que se reanude
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
             snakeCalc();
             //NOTIFY CHANGES TO GUI
             setChanged();
             notifyObservers();
 
+            int sleepDuration = hasTurbo ? 500 / 5 : 500;
             try {
-                if (hasTurbo == true) {
-                    Thread.sleep(500 / 5);
-                } else {
-                    Thread.sleep(500);
-                }
+                Thread.sleep(sleepDuration);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
         }
-        
+
         fixDirection(head);
-        
-        
+
+
     }
 
     private void snakeCalc() {
@@ -344,6 +350,15 @@ public class Snake extends Observable implements Runnable {
 
     public int getIdt() {
         return idt;
+    }
+
+    public synchronized void pauseThread() {
+        isPaused = true;
+    }
+
+    public synchronized void resumeThread() {
+            isPaused = false;
+            notify();
     }
 
 }

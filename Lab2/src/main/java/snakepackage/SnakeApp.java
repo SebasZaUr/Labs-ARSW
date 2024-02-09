@@ -2,9 +2,8 @@ package snakepackage;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-
 import javax.swing.JFrame;
-
+import javax.swing.SwingUtilities;
 import enums.GridSize;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -20,8 +19,12 @@ import javax.swing.JPanel;
 public class SnakeApp {
 
     private static SnakeApp app;
+
+    private boolean isPaused = false;
     public static final int MAX_THREADS = 8;
     Snake[] snakes = new Snake[MAX_THREADS];
+
+    private JButton start,stop,reload;
     private static final Cell[] spawn = {
         new Cell(1, (GridSize.GRID_HEIGHT / 2) / 2),
         new Cell(GridSize.GRID_WIDTH - 2,
@@ -55,7 +58,14 @@ public class SnakeApp {
         
         JPanel actionsBPabel=new JPanel();
         actionsBPabel.setLayout(new FlowLayout());
+        start = new JButton("Start ");
+        stop =new JButton("Stop ");
+        reload=new JButton("Reload");
         actionsBPabel.add(new JButton("Action "));
+        actionsBPabel.add(start);
+        actionsBPabel.add(stop);
+        actionsBPabel.add(reload);
+        prepareActions();
         frame.add(actionsBPabel,BorderLayout.SOUTH);
 
     }
@@ -72,16 +82,15 @@ public class SnakeApp {
             snakes[i] = new Snake(i + 1, spawn[i], i + 1);
             snakes[i].addObserver(board);
             thread[i] = new Thread(snakes[i]);
-            thread[i].start();
+
         }
 
         frame.setVisible(true);
 
-
         while (true) {
             int x = 0;
             for (int i = 0; i != MAX_THREADS; i++) {
-                if (snakes[i].isSnakeEnd() == true) {
+                if (snakes[i].isSnakeEnd()) {
                     x++;
                 }
             }
@@ -101,5 +110,45 @@ public class SnakeApp {
     public static SnakeApp getApp() {
         return app;
     }
+
+    public void prepareActions(){
+        start.addActionListener(e -> startGame());
+        stop.addActionListener(e -> {
+                stopGame();
+        });
+        reload.addActionListener(e -> {
+                resumeGame();
+        });
+    }
+
+    public void startGame(){
+        SwingUtilities.invokeLater(() ->{
+            for (Thread snake : thread) {
+                snake.start();
+            }
+        });
+
+    }
+
+    public synchronized void stopGame() {
+        SwingUtilities.invokeLater(() ->{
+            for (Snake snake : snakes) {
+                snake.pauseThread();
+                System.out.println("Snake " + snake.getIdt() + " paused.");
+            }
+        });
+
+    }
+
+    public synchronized void resumeGame() {
+        SwingUtilities.invokeLater(() ->{
+            for (Snake snake : snakes) {
+                snake.resumeThread();
+                System.out.println("Snake " + snake.getIdt() + " resumed.");
+            }
+        });
+    }
+
+    public boolean isPaused(){return isPaused;}
 
 }

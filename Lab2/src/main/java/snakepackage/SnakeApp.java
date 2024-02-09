@@ -7,8 +7,7 @@ import javax.swing.SwingUtilities;
 import enums.GridSize;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.LinkedList;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -19,8 +18,8 @@ import javax.swing.JPanel;
 public class SnakeApp {
 
     private static SnakeApp app;
-
     private boolean isPaused = false;
+    private boolean gameAlreadyRun = false;
     public static final int MAX_THREADS = 8;
     Snake[] snakes = new Snake[MAX_THREADS];
 
@@ -86,7 +85,17 @@ public class SnakeApp {
         }
 
         frame.setVisible(true);
+        play();
 
+        System.out.println("Thread (snake) status:");
+        for (int i = 0; i != MAX_THREADS; i++) {
+            System.out.println("["+i+"] :"+thread[i].getState());
+        }
+        
+
+    }
+
+    public void play(){
         while (true) {
             int x = 0;
             for (int i = 0; i != MAX_THREADS; i++) {
@@ -98,13 +107,6 @@ public class SnakeApp {
                 break;
             }
         }
-
-        System.out.println("Thread (snake) status:");
-        for (int i = 0; i != MAX_THREADS; i++) {
-            System.out.println("["+i+"] :"+thread[i].getState());
-        }
-        
-
     }
 
     public static SnakeApp getApp() {
@@ -117,37 +119,50 @@ public class SnakeApp {
                 stopGame();
         });
         reload.addActionListener(e -> {
-                resumeGame();
+            reloadGame();
         });
     }
 
     public void startGame(){
-        SwingUtilities.invokeLater(() ->{
-            for (Thread snake : thread) {
-                snake.start();
-            }
-        });
-
+        if (!gameAlreadyRun){
+            SwingUtilities.invokeLater(() ->{
+                for (Thread snake : thread) {
+                    snake.start();
+                }
+            });
+            gameAlreadyRun=true;
+        }else if (isPaused){
+            SwingUtilities.invokeLater(() ->{
+                for (Snake snake : snakes) {
+                    snake.resumeThread();
+                    //System.out.println("Snake " + snake.getIdt() + " resume.");
+                }
+            });
+            isPaused=false;
+        }
     }
 
     public synchronized void stopGame() {
         SwingUtilities.invokeLater(() ->{
             for (Snake snake : snakes) {
                 snake.pauseThread();
-                System.out.println("Snake " + snake.getIdt() + " paused.");
+                //System.out.println("Snake " + snake.getIdt() + " pause.");
             }
         });
-
+        isPaused=true;
     }
 
-    public synchronized void resumeGame() {
-        SwingUtilities.invokeLater(() ->{
+    public void reloadGame() {
+        SwingUtilities.invokeLater(() -> {
+            frame.setVisible(false);
             for (Snake snake : snakes) {
-                snake.resumeThread();
-                System.out.println("Snake " + snake.getIdt() + " resumed.");
+                snake.deleteThread();
+                System.out.println("Snake " + snake.getIdt() + " Killed.");
             }
+            init();
         });
     }
+
 
     public boolean isPaused(){return isPaused;}
 

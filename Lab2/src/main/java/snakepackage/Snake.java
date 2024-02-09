@@ -357,8 +357,14 @@ public class Snake extends Observable implements Runnable {
     }
 
     public synchronized void resumeThread() {
+        synchronized (lock) {
             isPaused = false;
-            notify();
+            lock.notify();
+        }
+    }
+
+    public synchronized void deleteThread(){
+        snakeEnd = true;
     }
 
 }

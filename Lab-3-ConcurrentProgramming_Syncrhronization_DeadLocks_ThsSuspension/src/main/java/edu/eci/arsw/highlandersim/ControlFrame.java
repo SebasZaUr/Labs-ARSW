@@ -5,22 +5,13 @@ import java.awt.EventQueue;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JOptionPane;
-import javax.swing.JToolBar;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 import java.awt.Color;
-import javax.swing.JScrollBar;
 
 public class ControlFrame extends JFrame {
 
@@ -67,6 +58,11 @@ public class ControlFrame extends JFrame {
         contentPane.add(toolBar, BorderLayout.NORTH);
 
         final JButton btnStart = new JButton("Start");
+
+        JButton btnPauseAndCheck = new JButton("Pause and check");
+
+        JButton btnResume = new JButton("Resume");
+
         btnStart.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
@@ -84,34 +80,38 @@ public class ControlFrame extends JFrame {
         });
         toolBar.add(btnStart);
 
-        JButton btnPauseAndCheck = new JButton("Pause and check");
+
         btnPauseAndCheck.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(() ->{
+                    synchronized (immortals){
+                        int sum = 0;
+                        for (Immortal im : immortals) {
+                            im.pauseThread();
+                            sum += im.getHealth();
+                        }
+                        statisticsLabel.setText("<html>"+immortals.toString()+"<br>Health sum:"+ sum);
+                    }
 
-                /*
-				 * COMPLETAR
-                 */
-                int sum = 0;
-                for (Immortal im : immortals) {
-                    sum += im.getHealth();
-                }
-
-                statisticsLabel.setText("<html>"+immortals.toString()+"<br>Health sum:"+ sum);
-                
-                
+                });
+                btnPauseAndCheck.setEnabled(false);
+                btnResume.setEnabled(true);
 
             }
         });
         toolBar.add(btnPauseAndCheck);
 
-        JButton btnResume = new JButton("Resume");
+
 
         btnResume.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                /**
-                 * IMPLEMENTAR
-                 */
-
+                SwingUtilities.invokeLater(() ->{
+                    for (Immortal im : immortals) {
+                        im.resumeThread();
+                    }
+                });
+                btnResume.setEnabled(false);
+                btnPauseAndCheck.setEnabled(true);
             }
         });
 

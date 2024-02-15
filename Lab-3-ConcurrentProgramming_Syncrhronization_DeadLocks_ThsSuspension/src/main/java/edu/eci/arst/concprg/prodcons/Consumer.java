@@ -17,31 +17,23 @@ public class Consumer extends Thread{
     
     private Queue<Integer> queue;
     
-    
     public Consumer(Queue<Integer> queue){
         this.queue=queue;        
     }
-    
+
     @Override
     public void run() {
         while (true) {
             synchronized (queue) {
-                while (queue.isEmpty()) {
-                    try {
-                        queue.wait();
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Consumer.class.getName()).log(Level.SEVERE, null, ex);
-
-                    }
-                }
+           
                 int elem = queue.poll();
                 System.out.println("Consumer consumes " + elem);
                 queue.notify();
 
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(Consumer.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Producer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }

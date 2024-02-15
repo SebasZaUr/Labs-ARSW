@@ -8,6 +8,7 @@ package edu.eci.arst.concprg.prodcons;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,22 +33,15 @@ public class Producer extends Thread {
     @Override
     public void run() {
         while (true) {
-            synchronized (queue) {
-
-                while (queue.remainingCapacity() -stockLimit== 0){
-                    try {
-                        queue.wait();
-                    }catch (InterruptedException ex) {
-                        Logger.getLogger(Producer.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                dataSeed = dataSeed + rand.nextInt(100);
+            try {
+                int dataSeed = rand.nextInt(100);
+                // Agrega el dato a la cola, esperando si la cola está llena por la libreria que usamos 
+                queue.put(dataSeed);
                 System.out.println("Producer added " + dataSeed);
-                queue.add(dataSeed);
-                queue.notify();
-
+               
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Producer.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         }
     }
 }

@@ -15,14 +15,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 public class StartProduction {
     
     
     public static void main(String[] args){
-
-        LinkedBlockingQueue<Integer> queue=new LinkedBlockingQueue<>();
-
-        new Producer(queue,2).start();
+        
+        int stockLimit = 3;
+        LinkedBlockingQueue<Integer> queue=new LinkedBlockingQueue<>(stockLimit);
+        new Producer(queue,stockLimit).start();
 
         //let the producer create products for 5 seconds (stock).
         try {
@@ -34,5 +35,4 @@ public class StartProduction {
         new Consumer(queue).start();
     }
     
-
 }

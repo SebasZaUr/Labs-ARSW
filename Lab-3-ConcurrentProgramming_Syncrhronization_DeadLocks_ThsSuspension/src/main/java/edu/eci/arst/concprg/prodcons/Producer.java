@@ -34,7 +34,7 @@ public class Producer extends Thread {
         while (true) {
             synchronized (queue) {
 
-                while (queue.remainingCapacity() == 0){
+                while (queue.remainingCapacity() -stockLimit== 0){
                     try {
                         queue.wait();
                     }catch (InterruptedException ex) {

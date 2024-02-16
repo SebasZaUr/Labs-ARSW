@@ -38,6 +38,7 @@ public class Producer extends Thread {
                 // Agrega el dato a la cola, esperando si la cola está llena por la libreria que usamos 
                 queue.put(dataSeed);
                 System.out.println("Producer added " + dataSeed);
+                System.out.println("Producer stock " + queue.size());
                
             } catch (InterruptedException ex) {
                 Logger.getLogger(Producer.class.getName()).log(Level.SEVERE, null, ex);

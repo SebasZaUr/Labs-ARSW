@@ -33,7 +33,7 @@ public class Immortal extends Thread {
 
     public void run() {
         isPause = false;
-        isStoped= false;
+
         while (true) {
             synchronized (name) {
                 if (isPause) {

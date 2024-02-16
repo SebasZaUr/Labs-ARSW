@@ -56,7 +56,7 @@ public class Immortal extends Thread {
 
                 synchronized (immortalsPopulation) {
                     im = immortalsPopulation.get(nextFighterIndex);
-                    if(!death) {
+                    if(!death && nextFighterIndex != myIndex) {
                         try {
                             this.fight(im);
                             Thread.sleep(1);
@@ -76,7 +76,8 @@ public class Immortal extends Thread {
             this.health += defaultDamageValue;
             updateCallback.processReport("Fight: " + this + " vs " + i2+"\n");
         } else {
-            death = true;
+            i2.death = true;
+            immortalsPopulation.remove(i2);
             updateCallback.processReport(this + " says:" + i2 + " is already dead!\n");
         }
     }

@@ -1,0 +1,3 @@
+Lo que notanmos, es que si seguimos como lo estan manejando en el control de los inmortales con el indice, cuando empieze a borrar los que
+ya fueron derrotados se desactualizaran, ya que, hay algunos que en el momento de que se borro algun inmortal quedaron fuera de la lista por
+el indice y indicara error.

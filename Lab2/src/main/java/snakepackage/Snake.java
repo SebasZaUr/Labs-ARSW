@@ -76,10 +76,7 @@ public class Snake extends Observable implements Runnable {
             }
 
         }
-
         fixDirection(head);
-
-
     }
 
     private void snakeCalc() {

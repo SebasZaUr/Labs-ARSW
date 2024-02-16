@@ -17,7 +17,7 @@ public class Immortal extends Thread {
 
     private final Random r = new Random(System.currentTimeMillis());
 
-    private boolean isPause;
+    private boolean isPause,isStoped,death;
 
 
     public Immortal(String name, List<Immortal> immortalsPopulation, int health, int defaultDamageValue, ImmortalUpdateReportCallback ucb) {
@@ -27,11 +27,13 @@ public class Immortal extends Thread {
         this.immortalsPopulation = immortalsPopulation;
         this.health = health;
         this.defaultDamageValue=defaultDamageValue;
+        this.death = false;
+        this.isStoped= false;
     }
 
     public void run() {
         isPause = false;
-
+        isStoped= false;
         while (true) {
             synchronized (name) {
                 if (isPause) {
@@ -51,13 +53,16 @@ public class Immortal extends Thread {
                     nextFighterIndex = (nextFighterIndex + 1) % immortalsPopulation.size();
                 }
 
+
                 synchronized (immortalsPopulation) {
                     im = immortalsPopulation.get(nextFighterIndex);
-                    try {
-                        this.fight(im);
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    if(!death) {
+                        try {
+                            this.fight(im);
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -71,6 +76,7 @@ public class Immortal extends Thread {
             this.health += defaultDamageValue;
             updateCallback.processReport("Fight: " + this + " vs " + i2+"\n");
         } else {
+            death = true;
             updateCallback.processReport(this + " says:" + i2 + " is already dead!\n");
         }
     }
@@ -92,6 +98,10 @@ public class Immortal extends Thread {
             isPause = false;
             name.notify();
         }
+    }
+
+    public void  stopedTread(){
+        Thread.currentThread().interrupt();
     }
 
     @Override
